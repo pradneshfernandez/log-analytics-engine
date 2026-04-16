@@ -24,9 +24,11 @@ Pass --files to override the default file list.
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 import time
 import tracemalloc
+from datetime import datetime, timezone
 from pathlib import Path
 
 import jax.numpy as jnp
@@ -130,7 +132,43 @@ def _print_table(results: list[dict]) -> None:
     print()
 
 
-def main(files: list[str]) -> None:
+def _save_results(results: list[dict], speedups: list[dict], out_path: str) -> None:
+    payload = {
+        "run_at":   datetime.now(tz=timezone.utc).isoformat(),
+        "jax_backend": jax.default_backend(),
+        "results":  results,
+        "speedups": speedups,
+    }
+    Path(out_path).parent.mkdir(parents=True, exist_ok=True)
+    with open(out_path, "w") as fh:
+        json.dump(payload, fh, indent=2)
+    print(f"\nResults saved → {out_path}")
+
+
+def _compute_speedups(results: list[dict]) -> list[dict]:
+    by_file: dict[float, dict] = {}
+    for r in results:
+        by_file.setdefault(round(r["file_mb"]), {})[r["engine"]] = r
+
+    speedups = []
+    for file_mb, engines in sorted(by_file.items()):
+        base = engines.get("pandas")
+        if not base:
+            continue
+        for eng, r in engines.items():
+            if eng == "pandas":
+                continue
+            speedups.append({
+                "file_mb":   file_mb,
+                "engine":    eng,
+                "speedup_x": round(r["lines_per_sec"] / base["lines_per_sec"], 2),
+                "baseline_lines_per_sec": round(base["lines_per_sec"]),
+                "engine_lines_per_sec":   round(r["lines_per_sec"]),
+            })
+    return speedups
+
+
+def main(files: list[str], out: str) -> None:
     device = jax.default_backend()
     print(f"\nJAX backend: {device.upper()}")
     all_results: list[dict] = []
@@ -154,7 +192,9 @@ def main(files: list[str]) -> None:
         all_results.append(_bench_full_pipeline(path))
 
     if all_results:
+        speedups = _compute_speedups(all_results)
         _print_table(all_results)
+        _save_results(all_results, speedups, out)
 
 
 if __name__ == "__main__":
@@ -164,5 +204,9 @@ if __name__ == "__main__":
         default=["data/1gb.log", "data/5gb.log", "data/10gb.log"],
         help="Log files to benchmark",
     )
+    ap.add_argument(
+        "--out", default="results/benchmark.json",
+        help="Path to save results JSON (default: results/benchmark.json)",
+    )
     args = ap.parse_args()
-    main(args.files)
+    main(args.files, args.out)
