@@ -31,6 +31,7 @@ import tracemalloc
 from datetime import datetime, timezone
 from pathlib import Path
 
+import jax
 import jax.numpy as jnp
 import numpy as np
 
