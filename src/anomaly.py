@@ -18,7 +18,7 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 
-jax.config.update("jax_platform_name", "cpu")
+# Platform selected via JAX_PLATFORM_NAME env var before import.
 
 
 # ---------------------------------------------------------------------------

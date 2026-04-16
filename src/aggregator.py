@@ -20,7 +20,8 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 
-jax.config.update("jax_platform_name", "cpu")   # explicit: no silent GPU fallback
+# Platform is selected via the JAX_PLATFORM_NAME env var before import.
+# Defaults to GPU when available, CPU otherwise — no code change needed.
 
 
 class AggregationResult(NamedTuple):

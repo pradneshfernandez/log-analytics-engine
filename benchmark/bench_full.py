@@ -12,9 +12,12 @@ Usage
     python data/generate_logs.py --output data/10gb.log --size-gb 10
 
     # Run benchmark:
-    python -m benchmark.bench_full
+    python -m benchmark.bench_full                        # auto-detect device
+    JAX_PLATFORM_NAME=cpu python -m benchmark.bench_full  # force CPU
+    JAX_PLATFORM_NAME=gpu python -m benchmark.bench_full  # force GPU
 
-On Colab (GPU runtime), JAX automatically uses the GPU; Numba uses CPU threads.
+JAX_PLATFORM_NAME must be set *before* any jax import (i.e. before this
+script runs).  On Colab GPU runtime JAX picks up the GPU automatically.
 Pass --files to override the default file list.
 """
 
@@ -81,8 +84,9 @@ def _bench_full_pipeline(path: str) -> dict:
     file_mb = Path(path).stat().st_size / 1024 ** 2
     peak_mb = peak / 1024 ** 2
 
+    device = jax.default_backend()
     return {
-        "engine":        "numba+jax",
+        "engine":        f"numba+jax({device})",
         "file_mb":       file_mb,
         "n_lines":       n_lines,
         "elapsed_sec":   elapsed,
@@ -127,6 +131,8 @@ def _print_table(results: list[dict]) -> None:
 
 
 def main(files: list[str]) -> None:
+    device = jax.default_backend()
+    print(f"\nJAX backend: {device.upper()}")
     all_results: list[dict] = []
 
     for path in files:
