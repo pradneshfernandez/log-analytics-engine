@@ -1,0 +1,35 @@
+# Large generated log files
+data/*.log
+data/*.log.gz
+
+# Benchmark output
+results/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# Numba JIT cache
+numba_cache/
+__numba_cache__/
+
+# JAX / XLA cache
+.jax_cache/
+jax_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+*.env
