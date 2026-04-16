@@ -1,0 +1,4 @@
+numba>=0.59.0
+jax[cpu]>=0.4.25
+numpy>=1.26.0
+pandas>=2.2.0
