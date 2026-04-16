@@ -32,10 +32,13 @@ _METHODS = ["GET", "GET", "GET", "GET", "GET", "POST", "POST", "PUT", "DELETE"]
 
 # Status code distribution for normal traffic
 _STATUS_CODES = [200, 201, 301, 302, 400, 401, 403, 404, 500, 502, 503]
-_STATUS_PROBS  = [0.72, 0.05, 0.02, 0.03, 0.02, 0.02, 0.01, 0.06, 0.03, 0.01, 0.01]
 
-# Same but with 5xx errors amplified for anomaly windows
-_ANOMALY_STATUS_PROBS = [0.50, 0.03, 0.01, 0.02, 0.02, 0.02, 0.01, 0.06, 0.20, 0.07, 0.06]
+def _norm(probs):
+    a = np.array(probs, dtype=np.float64)
+    return a / a.sum()
+
+_STATUS_PROBS         = _norm([0.72, 0.05, 0.02, 0.03, 0.02, 0.02, 0.01, 0.06, 0.03, 0.01, 0.01])
+_ANOMALY_STATUS_PROBS = _norm([0.50, 0.03, 0.01, 0.02, 0.02, 0.02, 0.01, 0.06, 0.20, 0.07, 0.06])
 
 ANOMALY_INTERVAL_SEC = 600   # spike every 10 minutes
 ANOMALY_DURATION_SEC  = 60   # each spike lasts 1 minute
