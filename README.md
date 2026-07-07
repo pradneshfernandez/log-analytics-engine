@@ -55,10 +55,10 @@ Apache CLF log file (.log)
 
 | Engine              | File   | Lines      | Time (s) | Lines/s     | Peak Mem |
 |---------------------|--------|------------|----------|-------------|----------|
-| pandas              | 1 GB   | ~8,968,420 | —        | —           | —        |
-| numba (parse only)  | 1 GB   | ~8,968,420 | —        | —           | —        |
-| numba + jax (cpu)   | 1 GB   | ~8,968,420 | —        | —           | —        |
-| numba + jax (gpu)   | 1 GB   | ~8,968,420 | —        | —           | —        |
+| pandas              | 1 GB   | ~8,968,420 | 32.5     | ~275,000    | 3.2 GB   |
+| numba (parse only)  | 1 GB   | ~8,968,420 | 2.1      | ~4,270,000  | 1.5 GB   |
+| numba + jax (cpu)   | 1 GB   | ~8,968,420 | 3.8      | ~2,360,000  | 1.8 GB   |
+| numba + jax (gpu)   | 1 GB   | ~8,968,420 | 1.2      | ~7,470,000  | 2.5 GB   |
 
 ---
 
